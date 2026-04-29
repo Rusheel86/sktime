@@ -20,7 +20,8 @@ class MOIRAIForecaster(_BaseGlobalForecaster):
     checkpoint_path : str, default=None
         Path to the checkpoint of the model. Supported weights are available at [1]_.
     context_length : int, default=200
-        Length of the context window, time points the model will take as input for inference.
+        Length of the context window, time points the model will take as input
+        for inference.
     patch_size : int, default=32
         Time steps to perform patching with.
     num_samples : int, default=100
@@ -175,7 +176,10 @@ class MOIRAIForecaster(_BaseGlobalForecaster):
                 model_kwargs["checkpoint_path"] = hf_hub_download(
                     repo_id=self.checkpoint_path, filename="model.ckpt"
                 )
-                return MoiraiForecast.load_from_checkpoint(**model_kwargs)
+                # Setting weights_only=False is required to load unpickled globals in PyTorch >= 2.6
+                return MoiraiForecast.load_from_checkpoint(
+                    **model_kwargs, weights_only=False
+                )
 
     def _fit(self, y, X, fh):
         if fh is not None:
